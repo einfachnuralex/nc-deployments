@@ -1,0 +1,16 @@
+---
+- name: Install MariaDB
+  apt: name={{ item }} state=latest
+  with_items:
+    - mariadb-server
+    - python-mysqldb
+
+- name: Create nextcloud db
+  mysql_db: name=nextcloud state=present
+
+- name: Create nextcloud user
+  mysql_user:
+    name: nextcloud
+    password: nextcloud
+    priv: 'nextcloud.*:ALL'
+    state: present

@@ -1,0 +1,58 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: no
+    owner: www-data
+    group: www-data
+    mode: 0755
+  with_items:
+    - /var/www/nextcloud
+    - /var/nc_data
+    - /var/www/letsencrypt
+    - /usr/local/tmp
+    - /usr/local/tmp/cache
+
+- name: Install Packages
+  apt:
+    name: "{{ item }}"
+    force: yes
+    state: present
+  with_items:
+    - logrotate
+    - geoip-database
+    - libgeoip1
+
+- name: Copy config
+  copy: src=nginx_1.11.7-1~xenial_amd64.deb dest=/root/nginx_1.11.7-1~xenial_amd64.deb mode=0644 owner=root group=root
+
+- name: Install custom nginx
+  apt: deb="/root/nginx_1.11.7-1~xenial_amd64.deb"
+
+- name: Mark nginx package to not upgrade
+  command: apt-mark hold nginx
+
+- name: Get GeoIP infos
+  get_url:
+    url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+    dest: /usr/share/GeoIP/GeoIP.dat.gz
+    mode: 0440
+
+#- name: Extract GeoIP infos
+#  unarchive:
+#    src: /usr/share/GeoIP/GeoIP.dat.gz
+#    dest: /usr/share/GeoIP/
+#    remote_src: True
+
+- name: Remove default config
+  file: path=/etc/nginx/conf.d/default.conf state=absent
+
+- name: Copy nextcloud nginx config
+  template: src=nextcloud.conf dest=/etc/nginx/conf.d/nextcloud.conf
+
+- name: Copy nginx config
+  template: src=nginx.conf dest=/etc/nginx/nginx.conf
+
+- name: Enable nginx
+  service: enabled=yes state=restarted name=nginx

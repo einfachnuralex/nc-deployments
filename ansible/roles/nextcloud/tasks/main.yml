@@ -1,0 +1,24 @@
+---
+- name: Download nextcloud 11
+  get_url:
+    url: https://download.nextcloud.com/server/releases/nextcloud-11.0.0.tar.bz2
+    dest: /tmp/nextcloud-11.0.0.tar.bz2
+    mode: 0440
+
+- name: Extract nextcloud
+  unarchive:
+    src: /tmp/nextcloud-11.0.0.tar.bz2
+    dest: /var/www
+    remote_src: True
+    creates: /var/www/nextcloud/index.php
+
+- name: Chamge permissions
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+  with_items:
+    - /var/www/nextcloud/config
+    - /var/www/nextcloud/apps

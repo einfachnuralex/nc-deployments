@@ -1,0 +1,30 @@
+nextcloud:
+  image: nc
+  links:
+    - db:db
+  ports:
+    - 80:80
+    - 443:443
+  environment:
+    - UID=1000
+    - GID=1000
+    - DB_TYPE=mysql
+    - DB_NAME=nextcloud
+    - DB_USER=nextcloud
+    - DB_PASSWORD=nextcloud
+    - DB_HOST=db
+  volumes:
+    - /mnt/data:/var/nc_data
+
+db:
+  image: mariadb:10
+  volumes:
+    - /mnt/db:/var/lib/mysql
+  environment:
+    - MYSQL_ROOT_PASSWORD=supersecretpassword
+    - MYSQL_DATABASE=nextcloud
+    - MYSQL_USER=nextcloud
+    - MYSQL_PASSWORD=nextcloud
+
+
+# docker run -d -e MYSQL_ROOT_PASSWORD=supersecretpassword -e MYSQL_DATABASE=nextcloud -e MYSQL_USER=nextcloud -e MYSQL_PASSWORD=nextcloud -v /mnt/db:/var/lib/mysql mariadb:10

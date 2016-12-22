@@ -1,0 +1,32 @@
+redis:
+  image: redis
+
+nc:
+  image: aheimsbakk/nextcloud:9
+  links:
+    - redis:redis
+    - mariadb:mariadb
+  environment:
+    - REDIS_ENABLED=true
+    - OVERWRITEPROTOCOL=https
+  volumes:
+    - /tmp/nc_data:/var/www/nextcloud/data
+    - /tmp/nc_config:/var/www/nextcloud/config
+
+mariadb:
+  image: mariadb
+  volumes:
+    - /tmp/nc_db:/var/lib/mysql
+  environment:
+    - MYSQL_ROOT_PASSWORD=ghoshfiart
+    - MYSQL_DATABASE=nextcloud
+    - MYSQL_USER=nextcloud
+    - MYSQL_PASSWORD=EtlenubZee
+
+proxy:
+  image: aheimsbakk/ssl-proxy:3.2
+  links:
+    - nc:http
+  ports:
+    - 80:80
+    - 443:443

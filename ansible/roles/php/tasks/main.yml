@@ -1,0 +1,51 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: no
+    owner: www-data
+    group: www-data
+    mode: 0755
+  with_items:
+    - /upload_tmp
+
+- name: Install language package
+  apt: name=language-pack-en-base state=present
+
+- name: Add PHP repo
+  apt_repository:
+    repo: 'ppa:ondrej/php'
+
+- name: Update APT package cache
+  apt: update_cache=yes upgrade=safe
+
+- name: Install php packages
+  apt:
+    name: "{{ item }}"
+    force: yes
+    state: present
+  with_items:
+    - php7.0-fpm
+    - php7.0-gd
+    - php7.0-mysql
+    - php7.0-curl
+    - php7.0-xml
+    - php7.0-zip
+    - php7.0-intl
+    - php7.0-mcrypt
+    - php7.0-mbstring
+    - php-apcu
+    - php-imagick
+    - php7.0-json
+    - php7.0-bz2
+    - php7.0-zip
+
+- name: PHP www pool config
+  template: src=www.conf dest=/etc/php/7.0/fpm/pool.d/www.conf
+
+- name: PHP cli config
+  template: src=php.ini dest=/etc/php/7.0/fpm/php.ini
+
+- name: PHP php-fpm config
+  template: src=php-fpm.conf dest=/etc/php/7.0/fpm/php-fpm.conf

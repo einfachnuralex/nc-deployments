@@ -1,0 +1,14 @@
+- name: Update APT package cache
+  apt: update_cache=yes upgrade=safe
+
+- name: Install Packages
+  apt: name="{{ item }}" force=yes state=present
+  with_items:
+    - wget
+    - unzip
+
+- name: Set timezone variables
+  copy: content={{ timezone }} dest=/etc/timezone owner=root group=root mode=0644
+
+- name: update timezone
+  command: dpkg-reconfigure --frontend noninteractive tzdata

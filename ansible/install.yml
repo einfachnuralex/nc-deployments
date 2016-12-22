@@ -1,0 +1,14 @@
+- name: Nextcloud
+
+  hosts: all
+  remote_user: root
+
+  vars_files:
+  - config.yml
+
+  roles:
+  - base
+  - nginx
+  - php
+  - mariadb
+  - nextcloud
