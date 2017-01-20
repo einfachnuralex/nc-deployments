@@ -14,6 +14,6 @@ Requirements:
 - aptitude
 - ansible
 
-apt install aptitude ansible
+apt install aptitude ansible git
 
 ansible-playbook -i hosts install.yml
